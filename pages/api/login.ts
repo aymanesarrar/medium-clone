@@ -6,10 +6,13 @@ export default async function loginHandler(
   res: NextApiResponse
 ) {
   const { email, password } = req.body;
-  const { user, session, error } = await supabase.auth.signIn({
+  const { session, error } = await supabase.auth.signIn({
     email,
     password,
   });
-  console.log(user, session, error);
-  res.status(200).send("logged in");
+  if (error) return res.status(401).json({ msg: error.message });
+  res.status(200).json({
+    msg: "Logged In successfully",
+    access_token: session?.access_token,
+  });
 }

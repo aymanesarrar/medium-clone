@@ -1,8 +1,11 @@
 import { FormProps, Inputs } from "../../types/interfaces/login";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { authenticationShema } from "../../schema/joi";
+import Router from "next/router";
+import { useCookies } from "react-cookie";
 
 const Form = ({ title }: FormProps) => {
+  const [cookies, setCookie, removeCookie] = useCookies(["x-access-token"]);
   const { register, handleSubmit } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const { error } = authenticationShema.validate(data);
@@ -16,7 +19,17 @@ const Form = ({ title }: FormProps) => {
           },
           body: JSON.stringify(data),
         });
-        console.log(response);
+        Router.push("/login");
+      } else {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        const res = await response.json();
+        setCookie("x-access-token", res.access_token);
       }
     }
   };

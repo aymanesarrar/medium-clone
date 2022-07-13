@@ -1,14 +1,22 @@
 import { NextPage } from "next";
 import Link from "next/link";
-import { MouseEventHandler, useState } from "react";
+import Router from "next/router";
+import { MouseEventHandler, useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import Form from "../components/layouts/Form";
 
 const Register: NextPage = () => {
   const [rEmail, setREmail] = useState(false);
+  const [cookies, setCookie, removeCookie] = useCookies(["x-access-token"]);
   const handleEmail: MouseEventHandler = (e) => {
     e.preventDefault();
     setREmail(!rEmail);
   };
+  useEffect(() => {
+    if (cookies.hasOwnProperty("x-access-token")) {
+      Router.push("/", undefined, { shallow: true });
+    }
+  }, [cookies]);
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="w-full mx-auto">

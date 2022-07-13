@@ -19,7 +19,7 @@ const Login: NextPage = () => {
     setRegisterMessage("");
   };
   useEffect(() => {
-    if (cookies) {
+    if (cookies.hasOwnProperty("x-access-token")) {
       Router.push("/", undefined, { shallow: true });
     }
   }, [cookies]);

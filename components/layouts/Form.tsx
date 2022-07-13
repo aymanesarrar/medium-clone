@@ -12,11 +12,6 @@ const Form = ({ title }: FormProps) => {
   const [cookies, setCookie, removeCookie] = useCookies(["x-access-token"]);
   const [message, setMessage] = useRecoilState(messageState);
   const { register, handleSubmit } = useForm<Inputs>();
-  useEffect(() => {
-    if (cookies) {
-      Router.push("/", undefined, { shallow: true });
-    }
-  }, [cookies]);
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const { error } = authenticationShema.validate(data);
     if (error) console.log(error);

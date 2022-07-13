@@ -1,9 +1,18 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import Router from "next/router";
+import { useEffect } from "react";
+import { useCookies } from "react-cookie";
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
+  const [cookies, setCookie, removeCookie] = useCookies(["x-access-token"]);
+  useEffect(() => {
+    if (!cookies.hasOwnProperty("x-access-token")) {
+      Router.push("/register", undefined, { shallow: true });
+    }
+  }, [cookies]);
   return (
     <div>
       <Head>
@@ -12,7 +21,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1 className="text-pink-500 text-xl">hey</h1>
+      <h1 className="text-xl text-pink-500">hey</h1>
     </div>
   );
 };

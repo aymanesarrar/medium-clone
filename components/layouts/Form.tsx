@@ -1,16 +1,22 @@
 import { FormProps, Inputs } from "../../types/interfaces/auth";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { authenticationShema } from "../../schema/joi";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 import { useCookies } from "react-cookie";
 import { useRecoilState } from "recoil";
 import { messageState } from "../../utils/states";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 const Form = ({ title }: FormProps) => {
   const [cookies, setCookie, removeCookie] = useCookies(["x-access-token"]);
   const [message, setMessage] = useRecoilState(messageState);
   const { register, handleSubmit } = useForm<Inputs>();
+  useEffect(() => {
+    if (cookies) {
+      Router.push("/", undefined, { shallow: true });
+    }
+  }, [cookies]);
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const { error } = authenticationShema.validate(data);
     if (error) console.log(error);
@@ -36,7 +42,10 @@ const Form = ({ title }: FormProps) => {
         });
         const res = await response.json();
         if (!res.access_token) setMessage(res.msg);
-        else setCookie("x-access-token", res.access_token);
+        else {
+          setCookie("x-access-token", res.access_token);
+          Router.push("/");
+        }
       }
     }
   };

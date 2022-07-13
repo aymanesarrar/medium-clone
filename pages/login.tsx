@@ -1,5 +1,7 @@
 import { NextPage } from "next";
-import { MouseEventHandler, useState } from "react";
+import Router from "next/router";
+import { MouseEventHandler, useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { useRecoilValue, useRecoilState } from "recoil";
 import Form from "../components/layouts/Form";
 import Modal from "../components/Modal";
@@ -8,6 +10,7 @@ import { messageState } from "../utils/states";
 const Login: NextPage = () => {
   const [rEmail, setREmail] = useState(false);
   const [registerMessage, setRegisterMessage] = useRecoilState(messageState);
+  const [cookies, setCookie, removeCookie] = useCookies(["x-access-token"]);
   const handleEmail: MouseEventHandler = (e) => {
     e.preventDefault();
     setREmail(!rEmail);
@@ -15,6 +18,11 @@ const Login: NextPage = () => {
   const handleCloseModal = () => {
     setRegisterMessage("");
   };
+  useEffect(() => {
+    if (cookies) {
+      Router.push("/", undefined, { shallow: true });
+    }
+  }, [cookies]);
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="w-full mx-auto">

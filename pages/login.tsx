@@ -6,6 +6,7 @@ import { useRecoilValue, useRecoilState } from "recoil";
 import Form from "../components/layouts/Form";
 import Modal from "../components/Modal";
 import { messageState } from "../utils/states";
+import { supabase } from "../utils/supabaseClient";
 
 const Login: NextPage = () => {
   const [rEmail, setREmail] = useState(false);
@@ -19,9 +20,15 @@ const Login: NextPage = () => {
     setRegisterMessage("");
   };
   useEffect(() => {
-    if (cookies.hasOwnProperty("x-access-token")) {
-      Router.push("/", undefined, { shallow: true });
-    }
+    const redirectUser = async () => {
+      const { error } = await supabase.auth.api.getUser(
+        cookies["x-access-token"]
+      );
+      if (!error) {
+        Router.push("/", undefined, { shallow: true });
+      }
+    };
+    redirectUser();
   }, [cookies]);
   return (
     <div className="flex items-center justify-center min-h-screen">

@@ -4,6 +4,7 @@ import Router from "next/router";
 import { MouseEventHandler, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import Form from "../components/layouts/Form";
+import { supabase } from "../utils/supabaseClient";
 
 const Register: NextPage = () => {
   const [rEmail, setREmail] = useState(false);
@@ -13,9 +14,15 @@ const Register: NextPage = () => {
     setREmail(!rEmail);
   };
   useEffect(() => {
-    if (cookies.hasOwnProperty("x-access-token")) {
-      Router.push("/", undefined, { shallow: true });
-    }
+    const redirectUser = async () => {
+      const { error } = await supabase.auth.api.getUser(
+        cookies["x-access-token"]
+      );
+      if (!error) {
+        Router.push("/", undefined, { shallow: true });
+      }
+    };
+    redirectUser();
   }, [cookies]);
   return (
     <div className="flex items-center justify-center min-h-screen">

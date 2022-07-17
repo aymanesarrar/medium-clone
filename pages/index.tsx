@@ -6,6 +6,8 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import useScreen from "../components/hooks/useScreen";
 import { AiOutlineClose } from "react-icons/ai";
 import useSidebar from "../components/hooks/useSidebar";
+import NavItems from "../components/NavItems";
+import { AnimatePresence, motion } from "framer-motion";
 
 const Home: NextPage = () => {
   const windowWidth = useScreen();
@@ -31,33 +33,25 @@ const Home: NextPage = () => {
               className="cursor-pointer  hover:scale-105 transition-all duration-300"
             />
           ) : (
-            <ul className="flex items-center  gap-4">
-              <li>Our story</li>
-              <li>Membership</li>
-              <li>Write</li>
-              <li>Sign In</li>
-              <li className="cursor-pointer bg-black py-2 px-4 text-white rounded-full">
-                Get started
-              </li>
-            </ul>
+            <NavItems sidebar={sidebar} />
           )}
-          {sidebar && (
-            <div className="fixed inset-y-0 right-0 w-1/2 bg-gray-300 p-6">
-              <ul className="flex flex-col items-center p-4  gap-4">
-                <li>Our story</li>
-                <li>Membership</li>
-                <li>Write</li>
-                <li>Sign In</li>
-                <li className="cursor-pointer bg-black py-2 px-4 text-white rounded-full">
-                  Get started
-                </li>
-              </ul>
-              <AiOutlineClose
-                onClick={closeSidebar}
-                className="absolute top-2 right-4 cursor-pointer"
-              />
-            </div>
-          )}
+          <AnimatePresence>
+            {sidebar && (
+              <motion.div
+                initial={{ right: -500 }}
+                animate={{ right: 0 }}
+                transition={{ duration: 0.3 }}
+                exit={{ right: -500 }}
+                className="fixed inset-y-0 right-0 w-1/2 bg-gray-300 p-6"
+              >
+                <NavItems sidebar={sidebar} />
+                <AiOutlineClose
+                  onClick={closeSidebar}
+                  className="absolute top-2 right-4 cursor-pointer"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </header>
     </div>

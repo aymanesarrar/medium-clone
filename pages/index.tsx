@@ -42,7 +42,7 @@ const Home: NextPage = () => {
                 animate={{ right: 0 }}
                 transition={{ duration: 0.3 }}
                 exit={{ right: -500 }}
-                className="fixed inset-y-0 right-0 w-1/2 bg-[#FFC016] p-6"
+                className="fixed inset-y-0 right-0 w-1/2 bg-gradient-to-br from-[#FFC016] to-[#ffc116a9] p-6"
               >
                 <NavItems sidebar={sidebar} />
                 <AiOutlineClose

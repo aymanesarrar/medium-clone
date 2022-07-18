@@ -15,9 +15,10 @@ const Register: NextPage = () => {
   };
   useEffect(() => {
     const redirectUser = async () => {
-      const { error } = await supabase.auth.api.getUser(
+      const { user, error } = await supabase.auth.api.getUser(
         cookies["x-access-token"]
       );
+      console.log(user);
       if (!error) {
         Router.push("/");
       }

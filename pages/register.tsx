@@ -19,7 +19,7 @@ const Register: NextPage = () => {
         cookies["x-access-token"]
       );
       if (!error) {
-        Router.push("/", undefined, { shallow: true });
+        Router.push("/");
       }
     };
     redirectUser();

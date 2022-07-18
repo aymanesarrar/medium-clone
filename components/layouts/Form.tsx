@@ -14,7 +14,7 @@ const Form = ({ title }: FormProps) => {
   const { register, handleSubmit } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const { error } = authenticationShema.validate(data);
-    if (error) console.log(error);
+    if (error) setMessage(error.message);
     else {
       if (title === "Sign Up") {
         const response = await fetch("/api/register", {
@@ -25,7 +25,7 @@ const Form = ({ title }: FormProps) => {
           body: JSON.stringify(data),
         });
         const res = await response.json();
-        if (res.hasOwnProperty("message")) setMessage(res.message);
+        if (res.hasOwnProperty("msg")) setMessage(res.msg);
         Router.push("/login");
       } else {
         const response = await fetch("/api/login", {

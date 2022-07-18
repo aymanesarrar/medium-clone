@@ -25,7 +25,7 @@ const Login: NextPage = () => {
         cookies["x-access-token"]
       );
       if (!error) {
-        Router.push("/", undefined, { shallow: true });
+        Router.push("/");
       }
     };
     redirectUser();
@@ -37,7 +37,7 @@ const Login: NextPage = () => {
           <h1>{registerMessage}</h1>
         </Modal>
         {!rEmail ? (
-          <form className="md:mx-auto flex flex-col text-center gap-4 border-[1px] border-black py-28 px-6 rounded-lg shadow-xl md:w-1/2">
+          <form className="md:mx-auto flex flex-col text-center gap-4 border-[1px] border-black py-28 px-6 rounded-lg shadow-xl md:w-1/2 ">
             <h1 className="text-2xl">Join Medium</h1>
             <button className="text-black border-[1px] border-black rounded-xl py-1 hover:translate-y-1 hover:scale-105 transition-all duration-300">
               Sign In with Google

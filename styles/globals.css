@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&display=swap");
+.hover-1 {
+  background: linear-gradient(#000000 0 0) calc(100% - var(--p, 0%)) /
+    var(--p, 0%) no-repeat;
+  transition: 0.4s, background-position 0s;
+}
+.hover-1:hover {
+  --p: 100%;
+  color: white;
+  padding: 0.5rem;
+}

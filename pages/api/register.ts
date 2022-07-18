@@ -1,38 +1,29 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import Joi from "joi";
 import { authenticationShema } from "../../schema/joi";
 import { supabase } from "../../utils/supabaseClient";
-import { UserCredentials } from "@supabase/gotrue-js";
+import { User } from "@supabase/supabase-js";
+import { ApiError } from "next/dist/server/api-utils";
 export default async function registerHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { email, password }: UserCredentials = req.body;
+  const { email, password } = req.body;
   const { error } = authenticationShema.validate(req.body);
   if (error) {
     return res.json({ status: "error", error: error.message });
   }
   try {
-    const {
-      user,
-      session,
-      error: err,
-    } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    if (!session && user?.identities?.length !== 0)
-      return res.json({
-        status: "ok",
-        message: "a user has been created, please confirm your email",
-      });
-    else
-      return res.json({
-        status: "ok",
-        message: "a user with this email already created",
-      });
+    const { data: user, error } = <
+      { data: User | null; error: ApiError | null }
+    >await supabase.auth.api.signUpWithEmail(email, password);
+    if (error) {
+      return res.json({ status: error.statusCode, msg: error.message });
+    }
+    if (user && user.identities?.length === 0)
+      return res.status(409).json({ msg: "User already exists" });
+    else return res.status(200).json({ msg: "user created successfully" });
   } catch (error) {
-    return res.send("an error has occured");
+    console.log(error);
   }
   res.status(200).send("ok");
 }

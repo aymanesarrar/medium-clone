@@ -28,10 +28,12 @@ const Home: NextPage = () => {
         <div className="flex items-center justify-between  w-full lg:w-[70%] mx-auto sticky">
           <MediumLogo />
           {windowWidth && windowWidth <= 667 ? (
-            <GiHamburgerMenu
-              onClick={openSidebar}
-              className="cursor-pointer  hover:scale-105 transition-all duration-300"
-            />
+            !sidebar && (
+              <GiHamburgerMenu
+                onClick={openSidebar}
+                className="cursor-pointer  hover:scale-105 transition-all duration-300"
+              />
+            )
           ) : (
             <NavItems sidebar={sidebar} />
           )}
@@ -42,7 +44,7 @@ const Home: NextPage = () => {
                 animate={{ right: 0 }}
                 transition={{ duration: 0.3 }}
                 exit={{ right: -500 }}
-                className="fixed inset-y-0 right-0 w-1/2 bg-gradient-to-br from-[#FFC016] to-[#ffc116a9] p-6"
+                className="fixed inset-y-0 right-0 w-1/2 bg-gradient-to-br from-[#FFC016] to-[#ffc116] p-6"
               >
                 <NavItems sidebar={sidebar} />
                 <AiOutlineClose
@@ -54,6 +56,25 @@ const Home: NextPage = () => {
           </AnimatePresence>
         </div>
       </header>
+      <div className="border-b-[1px] border-b-black p-8 w-screen bg-[#FFc016]">
+        <div className="p-8 flex justify-between  lg:w-[70%] lg:mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: -100 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="flex-1 flex flex-col gap-4 items-start"
+          >
+            <h1 className="text-7xl">Stay curious</h1>
+            <p className="text-zinc-800 text-xl">
+              Discover stories, thinking, and expertise from writers on any
+              topic.
+            </p>
+            <button className="bg-black text-white px-10 py-2 rounded-full hover:scale-105 hover:translate-y-1 transition-all duration-300 cursor-pointer">
+              Start reading
+            </button>
+          </motion.div>
+        </div>
+      </div>
     </div>
   );
 };

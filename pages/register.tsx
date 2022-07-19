@@ -1,4 +1,5 @@
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
+import cookies from "next-cookies";
 import Link from "next/link";
 import Router from "next/router";
 import { MouseEventHandler, useEffect, useState } from "react";
@@ -6,7 +7,33 @@ import { useCookies } from "react-cookie";
 import Form from "../components/layouts/Form";
 import { supabase } from "../utils/supabaseClient";
 
-const Register: NextPage = () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookie = cookies(context);
+  if (typeof cookie["x-access-token"] !== "undefined") {
+    const { user } = await supabase.auth.api.getUser(cookie["x-access-token"]);
+    if (user) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+        props: {
+          user,
+        },
+      };
+    } else {
+      return {
+        props: {},
+      };
+    }
+  } else {
+    return {
+      props: {},
+    };
+  }
+};
+
+const Register: NextPage = (props) => {
   const [rEmail, setREmail] = useState(false);
   const [cookies, setCookie, removeCookie] = useCookies(["x-access-token"]);
   const handleEmail: MouseEventHandler = (e) => {

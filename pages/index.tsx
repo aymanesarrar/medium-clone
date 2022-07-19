@@ -1,4 +1,4 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import MediumLogo from "../components/MediumLogo";
@@ -8,8 +8,36 @@ import { AiOutlineClose } from "react-icons/ai";
 import useSidebar from "../components/hooks/useSidebar";
 import NavItems from "../components/NavItems";
 import { AnimatePresence, motion } from "framer-motion";
+import cookies from "next-cookies";
+import { supabase } from "../utils/supabaseClient";
 
-const Home: NextPage = () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const cookie = cookies(context);
+  console.log(typeof cookie["x-access-token"]);
+  if (typeof cookie["x-access-token"] !== "undefined") {
+    const { user } = await supabase.auth.api.getUser(cookie["x-access-token"]);
+    if (!user) {
+      return {
+        redirect: {
+          destination: "/register",
+          permanent: false,
+        },
+      };
+    } else {
+      return {
+        props: { user },
+      };
+    }
+  } else
+    return {
+      redirect: {
+        destination: "/register",
+        permanent: false,
+      },
+    };
+};
+
+const Home: NextPage = (props) => {
   const windowWidth = useScreen();
   const { sidebar, openSidebar, closeSidebar } = useSidebar();
   useEffect(() => {

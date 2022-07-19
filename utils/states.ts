@@ -8,4 +8,8 @@ const userAuth = atom({
   key: "userAuth",
   default: false as boolean,
 });
-export { messageState, userAuth };
+const navItems = atom({
+  key: "navItems",
+  default: true as boolean,
+});
+export { messageState, userAuth, navItems };

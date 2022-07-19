@@ -1,4 +1,8 @@
-import type { GetServerSideProps, NextPage } from "next";
+import type {
+  GetServerSideProps,
+  InferGetServerSidePropsType,
+  NextPage,
+} from "next";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import MediumLogo from "../components/MediumLogo";
@@ -10,18 +14,16 @@ import NavItems from "../components/NavItems";
 import { AnimatePresence, motion } from "framer-motion";
 import cookies from "next-cookies";
 import { supabase } from "../utils/supabaseClient";
+import { useRecoilState } from "recoil";
+import { navItems } from "../utils/states";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookie = cookies(context);
-  console.log(typeof cookie["x-access-token"]);
   if (typeof cookie["x-access-token"] !== "undefined") {
     const { user } = await supabase.auth.api.getUser(cookie["x-access-token"]);
     if (!user) {
       return {
-        redirect: {
-          destination: "/register",
-          permanent: false,
-        },
+        props: {},
       };
     } else {
       return {
@@ -30,21 +32,26 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   } else
     return {
-      redirect: {
-        destination: "/register",
-        permanent: false,
-      },
+      props: {},
     };
 };
 
-const Home: NextPage = (props) => {
+const Home: NextPage = ({
+  user,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const windowWidth = useScreen();
   const { sidebar, openSidebar, closeSidebar } = useSidebar();
+  const [items, setItems] = useRecoilState(navItems);
   useEffect(() => {
     if (windowWidth && windowWidth > 667) {
       closeSidebar();
     }
   }, [windowWidth, closeSidebar]);
+  useEffect(() => {
+    if (user) {
+      setItems(false);
+    }
+  }, [user, setItems]);
   return (
     <div className="min-h-screen max-w-5xl  relative">
       <Head>
@@ -63,7 +70,7 @@ const Home: NextPage = (props) => {
               />
             )
           ) : (
-            <NavItems sidebar={sidebar} />
+            <NavItems items={items} sidebar={sidebar} />
           )}
           <AnimatePresence>
             {sidebar && (
@@ -74,7 +81,7 @@ const Home: NextPage = (props) => {
                 exit={{ right: -500 }}
                 className="fixed inset-y-0 right-0 w-1/2 bg-gradient-to-br from-[#f9c945] to-[#ffc116] p-6"
               >
-                <NavItems sidebar={sidebar} />
+                <NavItems sidebar={sidebar} items={items} />
                 <AiOutlineClose
                   onClick={closeSidebar}
                   className="absolute top-2 right-4 cursor-pointer"

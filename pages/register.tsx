@@ -45,7 +45,6 @@ const Register: NextPage = (props) => {
       const { user, error } = await supabase.auth.api.getUser(
         cookies["x-access-token"]
       );
-      console.log(user);
       if (!error) {
         Router.push("/");
       }

@@ -6,13 +6,16 @@ import { useCookies } from "react-cookie";
 import { useRecoilState } from "recoil";
 import { messageState } from "../../utils/states";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { ImSpinner2 } from "react-icons/im";
 
 const Form = ({ title }: FormProps) => {
   const [cookies, setCookie, removeCookie] = useCookies(["x-access-token"]);
   const [message, setMessage] = useRecoilState(messageState);
+  const [loading, setLoading] = useState(false);
   const { register, handleSubmit } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    setLoading(true);
     const { error } = authenticationShema.validate(data);
     if (error) setMessage(error.message);
     else {
@@ -69,9 +72,13 @@ const Form = ({ title }: FormProps) => {
           className="px-2 border-b-[1px] outline-none border-b-black pb-1"
         />
       </label>
-      <button className="py-1 text-white transition-all duration-300 bg-black md:w-1/2 md:mx-auto rounded-2xl hover:scale-105 hover:translate-y-1 hover:bg-zinc-900">
-        {title}
-      </button>
+      {loading ? (
+        <ImSpinner2 className="animate-spin mx-auto" />
+      ) : (
+        <button className="py-1 text-white transition-all duration-300 bg-black md:w-1/2 md:mx-auto rounded-2xl hover:scale-105 hover:translate-y-1 hover:bg-zinc-900">
+          {title}
+        </button>
+      )}
     </motion.form>
   );
 };

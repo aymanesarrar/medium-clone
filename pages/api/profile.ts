@@ -6,9 +6,9 @@ export default async function ProfileHandler(
   res: NextApiResponse
 ) {
   const { firstname, lastname, username, avatar_url, website } = req.body;
-  if (typeof req.query["x-access-token"] !== "undefined") {
+  if (typeof req.cookies["x-access-token"] !== "undefined") {
     const { user, error } = await supabase.auth.api.getUser(
-      req.query["x-access-token"] as string
+      req.cookies["x-access-token"] as string
     );
     if (error) res.send(error);
     else {
@@ -18,9 +18,8 @@ export default async function ProfileHandler(
           firstname,
           lastname,
           username,
-          avatar_url,
           website,
-          updated_at: Date.now(),
+          completed: true,
         },
 
         { returning: "minimal" }

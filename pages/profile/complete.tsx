@@ -42,7 +42,15 @@ export default function Complete({
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     const { error } = profileSchema.validate(data);
     if (!error) {
-      const result = await fetch("");
+      const result = await fetch("/api/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          credentials: "include",
+        },
+        body: JSON.stringify(data),
+      });
+      let res = await result.json();
     } else console.log(error);
   };
   return (

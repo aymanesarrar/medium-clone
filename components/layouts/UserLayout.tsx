@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { InferGetServerSidePropsType } from "next";
 import { useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
-import { GiHamburger } from "react-icons/gi";
+import { GiHamburgerMenu } from "react-icons/gi";
 import { useRecoilState } from "recoil";
 import { getServerSideProps } from "../../pages";
 import { navItems } from "../../utils/states";
@@ -32,15 +32,15 @@ export const UserLayout = ({
     }
   }, [user, setItems]);
   return (
-    <div className="min-h-screen max-w-5xl  relative">
+    <div className="relative max-w-5xl min-h-screen">
       <header className="bg-[#FFc016] border-b-[1.5px] border-b-black p-5 flex items-center justify-between w-screen">
         <div className="flex items-center justify-between  w-full lg:w-[70%] mx-auto sticky">
           <MediumLogo />
           {windowWidth && windowWidth <= 667 ? (
             !sidebar && (
-              <GiHamburger
+              <GiHamburgerMenu
                 onClick={openSidebar}
-                className="cursor-pointer  hover:scale-105 transition-all duration-300"
+                className="transition-all duration-300 cursor-pointer hover:scale-105"
               />
             )
           ) : (
@@ -58,7 +58,7 @@ export const UserLayout = ({
                 <NavItems sidebar={sidebar} items={items} />
                 <AiOutlineClose
                   onClick={closeSidebar}
-                  className="absolute top-2 right-4 cursor-pointer"
+                  className="absolute cursor-pointer top-2 right-4"
                 />
               </motion.div>
             )}

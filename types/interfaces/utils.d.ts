@@ -3,3 +3,9 @@ export interface ModalProps {
   show: boolean;
   onClose: () => void;
 }
+export interface ProfileInputs {
+  firstname: string;
+  lastname: string;
+  username: string;
+  website: string;
+}

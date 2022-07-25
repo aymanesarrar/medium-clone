@@ -21,9 +21,23 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         props: {},
       };
     } else {
-      return {
-        props: { user },
-      };
+      const { data } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", user.id);
+      if (data) {
+        return {
+          redirect: {
+            destination: "/login",
+            permanent: false,
+          },
+          props: {},
+        };
+      } else {
+        return {
+          props: { user },
+        };
+      }
     }
   } else
     return {

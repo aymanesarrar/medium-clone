@@ -12,7 +12,7 @@ export default async function ProfileHandler(
     );
     if (error) res.send(error);
     else {
-      const { data, error: err } = await supabase.from("profiles").insert(
+      const { error: err } = await supabase.from("profiles").insert(
         {
           id: user?.id,
           firstname,

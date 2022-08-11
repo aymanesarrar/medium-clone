@@ -7,6 +7,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { motion } from "framer-motion";
 import { ProfileInputs } from "../../types/interfaces/utils";
 import { profileSchema } from "../../schema/joi";
+import React, { useState } from "react";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const cookie = cookies(context);
@@ -25,7 +26,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         .from("profiles")
         .select("id")
         .eq("id", user.id);
-      if (data) {
+      if (data?.length !== 0) {
         return {
           redirect: {
             destination: "/login",
@@ -52,10 +53,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 export default function Complete({
   user,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const [path, setPath] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const { register, handleSubmit } = useForm<ProfileInputs>();
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     const { error } = profileSchema.validate(data);
     if (!error) {
+      try {
+        const { data, error } = await supabase.storage
+          .from("avatars")
+          .download(path);
+        if (error) throw error;
+        const url = URL.createObjectURL(data);
+        setAvatarUrl(url);
+      } catch (error) {
+        console.log("error downloading image");
+      }
+      data.avatar_url = avatarUrl;
+      console.log(data);
       const result = await fetch("/api/profile", {
         method: "POST",
         headers: {
@@ -66,6 +82,30 @@ export default function Complete({
       });
       let res = await result.json();
     } else console.log(error);
+  };
+  const uploadAvatar = async (event: React.FormEvent) => {
+    try {
+      setUploading(true);
+      const target = event.target as HTMLInputElement;
+      if (!target.files || target.files.length === 0) {
+        throw new Error("You must select an image to upload");
+      }
+      const file = target.files[0];
+      const fileExt = file.name.split(".").pop();
+      const filename = `${Math.random()}.${fileExt}`;
+      const filePath = `${filename}`;
+      setPath(filePath);
+      let { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file);
+      if (uploadError) {
+        throw uploadError;
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setUploading(false);
+    }
   };
   return (
     <UserLayout user={user}>
@@ -101,6 +141,13 @@ export default function Complete({
             {...register("website")}
             type="text"
             className="border-b-black border-b-[1px] outline-none p-2"
+          />
+          <input
+            type="file"
+            id="single"
+            accept="image/*"
+            onChange={uploadAvatar}
+            disabled={uploading}
           />
           <button className="p-2 mt-4 text-white bg-black rounded-full">
             Complete Profile

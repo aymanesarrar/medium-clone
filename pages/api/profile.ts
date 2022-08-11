@@ -19,7 +19,9 @@ export default async function ProfileHandler(
           lastname,
           username,
           website,
+          avatar_url,
           completed: true,
+          updated_at: new Date().toDateString(),
         },
 
         { returning: "minimal" }

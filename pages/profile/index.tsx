@@ -1,22 +1,30 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import cookies from "next-cookies";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { UserLayout } from "../../components/layouts/UserLayout";
 import { supabase } from "../../utils/supabaseClient";
+import { AiOutlineUser } from "react-icons/ai";
+import { ProfileData } from "../../types/interfaces/utils";
 
 export default function Profile({
   user,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const [data, setData] = useState<ProfileData | undefined>(undefined);
   useEffect(() => {
     const getProfile = async () => {
       try {
         const { data, error, status } = await supabase
           .from("profiles")
-          .select("username, website, avatar_url")
+          .select(
+            "firstname, lastname, username, website, avatar_url, updated_at"
+          )
           .eq("id", user.id)
           .single();
         if (error && status !== 406) throw error;
-        if (data) console.log(data);
+        if (data) {
+          setData(data);
+          console.log(data);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -25,7 +33,14 @@ export default function Profile({
   }, [user.id]);
   return (
     <UserLayout user={user}>
-      <h1>test</h1>
+      <div className="flex flex-col items-center justify-center w-screen gap-10">
+        <AiOutlineUser />
+        <div>first name: {data && data.firstname}</div>
+        <div>last name: {data && data.lastname}</div>
+        <div>username: {data && data.username}</div>
+        <div>website: {data && data.website}</div>
+        <div>last update: {data && data.updated_at}</div>
+      </div>
     </UserLayout>
   );
 }

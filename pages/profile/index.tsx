@@ -36,7 +36,7 @@ export default function Profile({
     <UserLayout user={user}>
       <div className="flex-1 w-screen p-4 mx-auto">
         {data ? (
-          <div className="flex justify-between mx-auto max-w-7xl">
+          <div className="flex justify-between mx-auto max-w-7xl md:max-w-6xl">
             <Image
               src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${data?.avatar_url}`}
               alt=""

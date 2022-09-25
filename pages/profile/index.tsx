@@ -2,9 +2,10 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import cookies from "next-cookies";
 import { useEffect, useState } from "react";
 import { UserLayout } from "../../components/layouts/UserLayout";
-import { supabase } from "../../utils/supabaseClient";
-import { AiOutlineUser } from "react-icons/ai";
+import { supabase, supabaseUrl } from "../../utils/supabaseClient";
 import { ProfileData } from "../../types/interfaces/utils";
+import { ImSpinner2 } from "react-icons/im";
+import Image from "next/image";
 
 export default function Profile({
   user,
@@ -20,10 +21,10 @@ export default function Profile({
           )
           .eq("id", user.id)
           .single();
+
         if (error && status !== 406) throw error;
         if (data) {
           setData(data);
-          console.log(data);
         }
       } catch (error) {
         console.log(error);
@@ -33,13 +34,28 @@ export default function Profile({
   }, [user.id]);
   return (
     <UserLayout user={user}>
-      <div className="flex flex-col items-center justify-center w-screen gap-10">
-        <AiOutlineUser />
-        <div>first name: {data && data.firstname}</div>
-        <div>last name: {data && data.lastname}</div>
-        <div>username: {data && data.username}</div>
-        <div>website: {data && data.website}</div>
-        <div>last update: {data && data.updated_at}</div>
+      <div className="flex-1 w-screen p-4 mx-auto">
+        {data ? (
+          <div className="flex justify-between mx-auto max-w-7xl">
+            <Image
+              src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${data?.avatar_url}`}
+              alt=""
+              height={200}
+              width={200}
+              className="max-w-full rounded-full"
+            />
+            <div className="flex flex-col gap-4 p-4 border-t-2 border-b-2 shadow-xl pr-28 rounded-xl border-t-black border-b-black">
+              <p className="font-semibold">
+                full name : {data?.firstname} {data?.lastname}
+              </p>
+              <p className="font-semibold">username: {data?.username}</p>
+              <p className="font-semibold">website: {data?.website}</p>
+              <p className="font-semibold">last updated : {data?.updated_at}</p>
+            </div>
+          </div>
+        ) : (
+          <ImSpinner2 className="animate-spin" />
+        )}
       </div>
     </UserLayout>
   );

@@ -14,3 +14,6 @@ export interface ProfileData extends ProfileInputs {
   avatar_url: string;
   updated_at: string;
 }
+export interface ImageData {
+  Key: string;
+}

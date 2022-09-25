@@ -32,7 +32,7 @@ export const UserLayout = ({
     }
   }, [user, setItems]);
   return (
-    <div className="relative max-w-5xl min-h-screen">
+    <div className="relative flex flex-col max-w-5xl min-h-screen">
       <header className="bg-[#FFc016] border-b-[1.5px] border-b-black p-5 flex items-center justify-between w-screen">
         <div className="flex items-center justify-between  w-full lg:w-[70%] mx-auto sticky">
           <MediumLogo />

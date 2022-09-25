@@ -53,34 +53,27 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 export default function Complete({
   user,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const [path, setPath] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [image, setImage] = useState("");
+
   const [uploading, setUploading] = useState(false);
   const { register, handleSubmit } = useForm<ProfileInputs>();
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     const { error } = profileSchema.validate(data);
     if (!error) {
+      data.avatar_url = image;
       try {
-        const { data, error } = await supabase.storage
-          .from("avatars")
-          .download(path);
-        if (error) throw error;
-        const url = URL.createObjectURL(data);
-        setAvatarUrl(url);
+        const result = await fetch("/api/profile", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            credentials: "include",
+          },
+          body: JSON.stringify(data),
+        });
+        let res = await result.json();
       } catch (error) {
-        console.log("error downloading image");
+        console.error(error);
       }
-      data.avatar_url = avatarUrl;
-      console.log(data);
-      const result = await fetch("/api/profile", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          credentials: "include",
-        },
-        body: JSON.stringify(data),
-      });
-      let res = await result.json();
     } else console.log(error);
   };
   const uploadAvatar = async (event: React.FormEvent) => {
@@ -91,16 +84,12 @@ export default function Complete({
         throw new Error("You must select an image to upload");
       }
       const file = target.files[0];
-      const fileExt = file.name.split(".").pop();
-      const filename = `${Math.random()}.${fileExt}`;
-      const filePath = `${filename}`;
-      setPath(filePath);
-      let { error: uploadError } = await supabase.storage
+      const { data, error } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file);
-      if (uploadError) {
-        throw uploadError;
-      }
+        .upload("public/" + file?.name, file as File);
+      if (data) {
+        setImage(data.Key);
+      } else console.log(error);
     } catch (error) {
       console.log(error);
     } finally {
@@ -124,19 +113,19 @@ export default function Complete({
             type="text"
             className="border-b-black border-b-[1px] outline-none p-2"
           />
-          <label htmlFor="firstname">lastname : </label>
+          <label htmlFor="lastname">lastname : </label>
           <input
             {...register("lastname")}
             type="text"
             className="border-b-black border-b-[1px] outline-none p-2"
           />
-          <label htmlFor="firstname">username : </label>
+          <label htmlFor="username">username : </label>
           <input
             {...register("username")}
             type="text"
             className="border-b-black border-b-[1px] outline-none p-2"
           />
-          <label htmlFor="firstname">website : </label>
+          <label htmlFor="website">website : </label>
           <input
             {...register("website")}
             type="text"
